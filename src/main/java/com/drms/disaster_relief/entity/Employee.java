@@ -24,6 +24,7 @@ public class Employee {
 
     private String phoneNumber;
 
+    @Column(unique = true, nullable = false)
     private String email;
 
     private String role;
@@ -34,7 +35,7 @@ public class Employee {
 
     private boolean isActive;
 
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt = LocalDateTime.now();
 }
