@@ -1,19 +1,15 @@
-package com.drms.disaster_relief.entity;
+package com.drms.disaster_relief.dto;
 
+import com.drms.disaster_relief.entity.Branch;
 import jakarta.persistence.*;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-@Entity
-public class Employee {
-    @Id
-    @GeneratedValue
-    private UUID employeeId;
+public class EmployeeSignUpRequest {
 
-    @ManyToOne
-    @JoinColumn(name="branchId")
     private Branch branch;
 
     private String firstName;
@@ -24,7 +20,6 @@ public class Employee {
 
     private String phoneNumber;
 
-    @Column(unique = true, nullable = false)
     private String email;
 
     private String role;
@@ -33,9 +28,7 @@ public class Employee {
 
     private String availabilityStatus;
 
-    private boolean isActive;
+    private String loginIdentifier;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    private String password;
 }

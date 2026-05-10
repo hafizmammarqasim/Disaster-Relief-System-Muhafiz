@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -48,8 +50,13 @@ public class AuthService {
         auth.setEntityId(savedUser.getUserId());
         auth.setActive(true);
 
-        authRepository.save(auth);     //  save auth object in auth table
+        saveAuth(auth);
+        //  save auth object in auth table
         return "User registered successfully";
+    }
+
+    public void saveAuth(Auth auth){
+        authRepository.save(auth);
     }
 
 
@@ -73,5 +80,15 @@ public class AuthService {
         user.setCity((String) requestData.get("city"));
 
         return user;
+    }
+
+    public boolean isUnique(String identifier){
+        //design choice
+        //return false if user exists
+        return !(authRepository.existsByLoginIdentifier(identifier));
+    }
+
+    public Optional<Auth> findByIdentifier(String identifier){
+        return authRepository.findByLoginIdentifier(identifier);
     }
 }
