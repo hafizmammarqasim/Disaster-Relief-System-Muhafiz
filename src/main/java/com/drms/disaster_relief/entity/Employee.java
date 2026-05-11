@@ -6,35 +6,50 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-//@Entity
+@Entity
+@Table(name = "employees")
 public class Employee {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID employeeId;
 
     @ManyToOne
     @JoinColumn(name="branchId")
     private Branch branch;
 
+    @Column(nullable = false)
     private String firstName;
 
+    @Column(nullable = false)
     private String lastName;
 
+    @Column(unique = true, nullable = false)
     private String cnic;
 
+    @Column(nullable = false)
     private String phoneNumber;
 
+    @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String role;
 
+    @Column(nullable = false)
     private String specialization;
 
     private String availabilityStatus;
 
-    private boolean isActive;
+    private boolean isActive = true;
 
-    private LocalDateTime createdAt;
+    @Column(updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    private LocalDateTime updatedAt;
+    @Column(updatable = true)
+    private LocalDateTime updatedAt = LocalDateTime.now();
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

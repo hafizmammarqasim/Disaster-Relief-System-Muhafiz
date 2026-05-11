@@ -19,11 +19,12 @@ public class UserDetailServiceImpl implements UserDetailsService {
         Auth auth = authRepository.findByLoginIdentifier(loginIdentifier)
                 .orElseThrow(() -> new UsernameNotFoundException("user nor found: " + loginIdentifier));
 
-            return org.springframework.security.core.userdetails.User.builder()
-                    .username(loginIdentifier)
-                    .password(auth.getPassword())
-                    .roles(auth.getRole())
-                    .build();
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(loginIdentifier)
+                .password(auth.getPassword())
+                .roles(auth.getRole())
+                .disabled(!auth.isActive())   //  disabled if not active
+                .build();
     }
 }
 

@@ -6,7 +6,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-//@Entity
+@Entity
+@Table(name = "cities")
 public class City {
     @Id
     @GeneratedValue

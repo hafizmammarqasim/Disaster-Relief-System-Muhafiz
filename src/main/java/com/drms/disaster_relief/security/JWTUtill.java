@@ -26,8 +26,9 @@ public class JWTUtill {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String loginIdentifier) {
+    public String generateToken(String loginIdentifier, String role) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role);
         return createToken(claims, loginIdentifier);
     }
 
@@ -45,6 +46,11 @@ public class JWTUtill {
     public String extractUserName(String token) {
         Claims claims = extractAllClaims(token);   // here we are usinf claims object because
         return claims.getSubject();                // because we set claims while creating the token.
+    }
+
+    public String extractRoleOfUser(String token) {
+        Claims claims = extractAllClaims(token);   // here we are usinf claims object because
+        return (String) claims.get("role");
     }
 
     public Boolean validateToken(String token) {

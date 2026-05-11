@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-//@Entity
+@Entity
+@Table(name = "branches")
 public class Branch {
 
     @Id

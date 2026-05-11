@@ -13,15 +13,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
     private JWTUtill jwtUtill;
-
-    @Autowired
-    private UserDetailServiceImpl userDetailService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
@@ -38,17 +36,24 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailService.loadUserByUsername(userName);    // calls method from UserDetailServiceImpl class and gets the auth details and match them
-
             if (jwtUtill.validateToken(token)) {      // this calls the method from JwtUtill and validates the token
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));  // record user ip address and session id
-                        SecurityContextHolder.getContext().setAuthentication(authentication);  // storage for current request. once the user logs in, for every other part of system, it remebers this is verified user Ahmad etc.
-                                                                                                // this lasts for one request. have to do for each request.
+                String role = jwtUtill.extractRoleOfUser(token);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userName, null,
+                        List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority(role)));
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));  // record user ip address and session id
+                SecurityContextHolder.getContext().setAuthentication(authentication);  // storage for current request. once the user logs in, for every other part of system, it remebers this is verified user Ahmad etc.
+                // this lasts for one request. have to do for each request.
             }
         }
         chain.doFilter(request, response);  //  it tells the request to keep moving
     }
+
+
+
+
+
+
+
 }
 
 
