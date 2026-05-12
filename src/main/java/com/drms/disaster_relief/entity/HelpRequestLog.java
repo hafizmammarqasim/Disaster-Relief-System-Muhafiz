@@ -6,17 +6,18 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-//@Entity
+@Entity
+@Table(name = "help_request_logs")
 public class HelpRequestLog {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID logId;
 
-    @ManyToOne
-    @JoinColumn(name = "requestId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "requestId", nullable = false)
     private HelpRequest request;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employeeId")
     private Employee addedBy;
 
@@ -24,5 +25,5 @@ public class HelpRequestLog {
 
     private String remarks;
 
-    private LocalDateTime changedAt;
+    private LocalDateTime changedAt = LocalDateTime.now();
 }

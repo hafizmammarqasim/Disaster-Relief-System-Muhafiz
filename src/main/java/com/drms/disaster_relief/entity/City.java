@@ -10,14 +10,15 @@ import java.util.UUID;
 @Table(name = "cities")
 public class City {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID cityId;
 
     @ManyToOne
     @JoinColumn(name = "provinceId")
     private Province province;
 
+    @Column(nullable = false, unique = true)
     private String cityName;
 
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
