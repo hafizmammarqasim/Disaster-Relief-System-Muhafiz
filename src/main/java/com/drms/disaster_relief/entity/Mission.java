@@ -1,5 +1,6 @@
 package com.drms.disaster_relief.entity;
 
+import enums.MissionStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
@@ -8,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-//@Entity
+@Entity
 public class Mission {
     @Id
     @GeneratedValue
@@ -46,13 +47,13 @@ public class Mission {
 
     private String guidelines;
 
-    private String status;
+    private MissionStatus status;
 
     private LocalDate expectedCompletionDate;
 
     private LocalDate actualCompletionDate;
 
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     private LocalDateTime updatedAt;
 

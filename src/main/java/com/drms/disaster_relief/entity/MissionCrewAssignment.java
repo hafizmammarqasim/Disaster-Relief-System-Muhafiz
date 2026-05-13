@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-//@Entity
+@Entity
 public class MissionCrewAssignment {
     @Id
     @GeneratedValue
@@ -22,5 +22,5 @@ public class MissionCrewAssignment {
 
     private boolean acknowledged;
 
-    private LocalDateTime assignedAt;
+    private LocalDateTime assignedAt = LocalDateTime.now();
 }
