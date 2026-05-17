@@ -1,11 +1,7 @@
-package com.drms.disaster_relief.dto;
+package com.drms.disaster_relief.dto.Request;
 
 import com.drms.disaster_relief.entity.Branch;
-import jakarta.persistence.*;
 import lombok.Data;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 public class EmployeeSignUpRequest {

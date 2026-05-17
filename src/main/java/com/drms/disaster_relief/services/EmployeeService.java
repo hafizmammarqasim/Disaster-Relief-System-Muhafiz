@@ -1,9 +1,12 @@
 package com.drms.disaster_relief.services;
 
-import com.drms.disaster_relief.dto.EmployeeSignUpRequest;
+import com.drms.disaster_relief.dto.Request.EmployeeSignUpRequest;
 import com.drms.disaster_relief.entity.Auth;
 import com.drms.disaster_relief.entity.Employee;
+import com.drms.disaster_relief.enums.EmployeeWorkingStatus;
+import com.drms.disaster_relief.enums.RoleType;
 import com.drms.disaster_relief.repository.EmployeeRepository;
+import com.drms.disaster_relief.enums.EmployeeSpecialization;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,7 +44,7 @@ public class EmployeeService {
             auth.setEntityId(employee.getEmployeeId());
             auth.setLoginIdentifier(employeeDto.getLoginIdentifier());
             auth.setPassword(encoder.encode(employeeDto.getPassword()));
-            auth.setRole(employeeDto.getRole());
+            auth.setRole(RoleType.valueOf(employeeDto.getRole()));
             auth.setActive(true);
             authService.saveAuth(auth);
             return true;
@@ -58,15 +61,16 @@ public class EmployeeService {
         employee.setLastName(employeeDto.getLastName());
         employee.setBranch(employeeDto.getBranch());
         employee.setCnic(employeeDto.getCnic());
-        employee.setRole(employeeDto.getRole());
+        employee.setRole(RoleType.valueOf(employeeDto.getRole()));
         employee.setEmail(employeeDto.getEmail());
         employee.setPhoneNumber(employeeDto.getPhoneNumber());
-        employee.setSpecialization(employeeDto.getSpecialization());
+        employee.setSpecialization(EmployeeSpecialization.valueOf(employeeDto.getSpecialization()));
+
         //If employee is Admin, no need for availability status....
         if(employeeDto.getRole().equalsIgnoreCase("Employee"))
-            employee.setAvailabilityStatus("Available");
+            employee.setEmployeeStatus(EmployeeWorkingStatus.Available);
         else
-            employee.setAvailabilityStatus(null);
+            employee.setEmployeeStatus(null);
         employee.setActive(true);
         return employee;
     }

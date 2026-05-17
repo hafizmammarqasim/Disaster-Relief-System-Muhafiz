@@ -1,21 +1,17 @@
-package com.drms.disaster_relief.dto;
+package com.drms.disaster_relief.dto.Request;
 import com.drms.disaster_relief.entity.*;
 import lombok.Data;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.util.UUID;
 
 @Data
 public class CreateMissionDto {
 
 
-        private HelpRequest request;
-
-        private City city;
-
-        private Branch branch;
-
-        private Employee createdBy;
+    private UUID requestId;
+    private UUID cityId;
+    private UUID branchId;
+    private UUID createdById;
 
         private String missionName;
 

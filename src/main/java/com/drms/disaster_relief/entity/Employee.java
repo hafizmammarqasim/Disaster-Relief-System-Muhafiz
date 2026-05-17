@@ -1,5 +1,8 @@
 package com.drms.disaster_relief.entity;
 
+import com.drms.disaster_relief.enums.EmployeeSpecialization;
+import com.drms.disaster_relief.enums.EmployeeWorkingStatus;
+import com.drms.disaster_relief.enums.RoleType;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -27,15 +30,19 @@ public class Employee {
     @Column(unique = true, nullable = false)
     private String email;
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private RoleType role;
 
-    private String specialization;
+    @Enumerated(EnumType.STRING)
+    private EmployeeSpecialization specialization;
 
-    private String availabilityStatus;
+    @Enumerated(EnumType.STRING)
+    private EmployeeWorkingStatus employeeStatus;
 
     private boolean isActive;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
     private LocalDateTime updatedAt = LocalDateTime.now();
+
 }
