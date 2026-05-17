@@ -33,10 +33,9 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)                                        //  we using JWT (stateless). we don't need cookies. so disable this.
                 .authorizeHttpRequests(auth -> auth                                             //   permission list
-                        .requestMatchers("/public/**").permitAll()                                  // url starting with /public/ is permitted to everyone (public)
-                        .requestMatchers("/admin/**").hasRole("ADMIN")                              // url starting with /admin/  is allowed to a person whose role is ADMIN
-                        .requestMatchers("/api/missions/**", "/api/users/**").authenticated()      // once logged in with valid, any one can access these methods
-                        .anyRequest().authenticated()                                                       // means every other url is locked. need token to unlock it
+                        .requestMatchers("/public/**","/missions/**", "/api/employee/**","/api/users/**").permitAll()                                  // url starting with /public/ is permitted to everyone (public)
+                        .requestMatchers("/admin/**").hasRole("ADMIN")                              // url starting with /admin/  is allowed to a person whose role is ADMIN// once logged in with valid, any one can access these methods
+                        .anyRequest().authenticated()                                                     // means every other url is locked. need token to unlock it
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // tells spring don't create sessions. server should
                                                                                                             // not remeber user. at each request token verification is required

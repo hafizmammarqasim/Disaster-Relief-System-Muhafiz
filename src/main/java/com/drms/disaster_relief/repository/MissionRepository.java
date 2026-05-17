@@ -4,8 +4,6 @@ import com.drms.disaster_relief.entity.Mission;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.OptionalLong;
 import java.util.UUID;
 
 public interface MissionRepository extends JpaRepository<Mission, UUID> {
@@ -14,5 +12,5 @@ public interface MissionRepository extends JpaRepository<Mission, UUID> {
     //In case of list, it returns just empty list from here...
     List<Mission> findByCreatedBy(UUID id);
 
-    List<Mission> findByMissionCrewAssignmentEmployeeEmployeeId(UUID employeeId);
+    List<Mission> findByCrewAssignments_Employee_EmployeeId(UUID employeeId);
 }

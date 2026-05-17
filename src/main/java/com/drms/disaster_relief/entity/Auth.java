@@ -1,5 +1,6 @@
 package com.drms.disaster_relief.entity;
 
+import com.drms.disaster_relief.enums.RoleType;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,7 +24,8 @@ public class Auth {
     private String password;
 
     @Column(nullable = false)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private RoleType role;
 
     private String entityType;
 

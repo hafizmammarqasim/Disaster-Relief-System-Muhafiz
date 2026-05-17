@@ -2,6 +2,7 @@ package com.drms.disaster_relief.services;
 
 import com.drms.disaster_relief.entity.Auth;
 import com.drms.disaster_relief.entity.User;
+import com.drms.disaster_relief.enums.RoleType;
 import com.drms.disaster_relief.repository.AuthRepository;
 import com.drms.disaster_relief.repository.UserRepository;
 import com.drms.disaster_relief.security.JWTUtill;
@@ -35,7 +36,7 @@ public class AuthService {
     private JWTUtill jwtUtill;
 
     @Transactional
-    public String signup(Map<String, Object> requestData) {
+    public String userSignup(Map<String, Object> requestData) {
 
         User user = createUserObject(requestData);   // create user object
         User savedUser = userRepository.save(user);  // save user object in user table
@@ -45,7 +46,7 @@ public class AuthService {
         Auth auth = new Auth();      //   creating auth object
         auth.setLoginIdentifier(savedUser.getEmail());
         auth.setPassword(passwordEncoder.encode(password));
-        auth.setRole("USER");
+        auth.setRole(RoleType.USER);
         auth.setEntityType("CITIZEN");
         auth.setEntityId(savedUser.getUserId());
         auth.setActive(true);
