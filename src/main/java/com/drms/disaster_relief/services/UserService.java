@@ -22,17 +22,17 @@ public class UserService {
     private final CityRepository cityRepository;
     private final ProvinceRepository provinceRepository;
     private final HelpRequestRepository helpRequestRepository;
-    private final HelpRequestLog helpRequestLog;
-    private final HelpRequestLogRepository helpRequestLoglogRepository;
+   // private final HelpRequestLog helpRequestLog;
+    private final HelpRequestLogRepository helpRequestLogRepository;
 
     public UserService(UserRepository userRepository, CityRepository cityRepository, ProvinceRepository provinceRepository,
-                       HelpRequestRepository helpRequestRepository, HelpRequestLog helpRequestLog, HelpRequestLogRepository helpRequestLoglogRepository) {
+                       HelpRequestRepository helpRequestRepository, HelpRequestLogRepository helpRequestLogRepository) {
         this.userRepository = userRepository;
         this.cityRepository = cityRepository;
         this.provinceRepository = provinceRepository;
         this.helpRequestRepository = helpRequestRepository;
-        this.helpRequestLog = helpRequestLog;
-        this.helpRequestLoglogRepository = helpRequestLoglogRepository;
+       // this.helpRequestLog = helpRequestLog;
+        this.helpRequestLogRepository = helpRequestLogRepository;
     }
 
 
@@ -50,8 +50,8 @@ public class UserService {
         helpRequest.setCityId(city);
         helpRequest.setArea(helpRequestDTO.getArea());
         helpRequest.setNearestLandmark(helpRequestDTO.getNearestLandmark());
-        helpRequest.setLocationLat(helpRequest.getLocationLat());
-        helpRequest.setLocationLng(helpRequest.getLocationLng());
+        helpRequest.setLocationLat(helpRequestDTO.getLocationLat());
+        helpRequest.setLocationLng(helpRequestDTO.getLocationLng());
         helpRequest.setHelpType(helpRequestDTO.getHelpType());
         helpRequest.setUrgencyLevel(helpRequestDTO.getUrgencyLevel());
         helpRequest.setDescription(helpRequestDTO.getDescription());
@@ -64,7 +64,7 @@ public class UserService {
         helpRequestLog.setStatus("PENDING");
         helpRequestLog.setRemarks("Emergency request successfully submitted by user.");
 
-        helpRequestLoglogRepository.save(helpRequestLog);
+        helpRequestLogRepository.save(helpRequestLog);
         return "Your Help Request is submitted successfully";
     }
 
