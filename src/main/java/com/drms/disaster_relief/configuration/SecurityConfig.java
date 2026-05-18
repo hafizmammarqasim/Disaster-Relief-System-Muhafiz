@@ -15,6 +15,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -31,9 +38,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)                                        //  we using JWT (stateless). we don't need cookies. so disable this.
                 .authorizeHttpRequests(auth -> auth                                             //   permission list
-                        .requestMatchers("/public/**").permitAll()                                  // url starting with /public/ is permitted to everyone (public)
+                        .requestMatchers("/public/**", "/error").permitAll()                                  // url starting with /public/ is permitted to everyone (public)
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")                              // url starting with /admin/  is allowed to a person whose role is ADMIN
                         .requestMatchers("/missions/**", "/user/**").authenticated()      // once logged in with valid, any one can access these methods
                         .anyRequest().authenticated()                                                       // means every other url is locked. need token to unlock it
@@ -54,6 +62,19 @@ public class SecurityConfig {
     @Bean                                                      //  it is used to verify user credentials. do not need to write extra code.
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
 
