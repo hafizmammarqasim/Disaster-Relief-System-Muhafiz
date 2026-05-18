@@ -1,5 +1,8 @@
 package com.drms.disaster_relief.entity;
 
+import com.drms.disaster_relief.enums.HelpType;
+import com.drms.disaster_relief.enums.RequestStatus;
+import com.drms.disaster_relief.enums.UrgencyLevel;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.extern.apachecommons.CommonsLog;
@@ -33,14 +36,17 @@ public class HelpRequest {
     private float locationLng;
 
     @Column(nullable = false)
-    private String helpType;
+    @Enumerated(EnumType.STRING)
+    private HelpType helpType;
 
     @Column(nullable = false)
-    private String urgencyLevel;
+    @Enumerated(EnumType.STRING)
+    private UrgencyLevel urgencyLevel;
 
     private String description;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private RequestStatus status;
 
     @Column(updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

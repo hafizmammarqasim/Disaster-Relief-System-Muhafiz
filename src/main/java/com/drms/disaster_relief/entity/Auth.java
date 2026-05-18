@@ -1,5 +1,7 @@
 package com.drms.disaster_relief.entity;
 
+import com.drms.disaster_relief.enums.EntityType;
+import com.drms.disaster_relief.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,9 +25,11 @@ public class Auth {
     private String password;
 
     @Column(nullable = false)
-    private String role;
+    @Enumerated(EnumType.STRING) // This saves "ADMIN" as text in SQL, not a number (Industry Standard)
+    private Role role;
 
-    private String entityType;
+    @Enumerated(EnumType.STRING)
+    private EntityType entityType;
 
     private UUID entityId;
 

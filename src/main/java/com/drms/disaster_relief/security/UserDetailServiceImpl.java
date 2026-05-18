@@ -22,7 +22,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
         return org.springframework.security.core.userdetails.User.builder()
                 .username(loginIdentifier)
                 .password(auth.getPassword())
-                .roles(auth.getRole())
+                .roles(auth.getRole().name())
                 .disabled(!auth.isActive())   //  disabled if not active
                 .build();
     }

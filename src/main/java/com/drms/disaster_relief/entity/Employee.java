@@ -1,5 +1,6 @@
 package com.drms.disaster_relief.entity;
 
+import com.drms.disaster_relief.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -33,7 +34,8 @@ public class Employee {
     private String email;
 
     @Column(nullable = false)
-    private String role;
+    @Enumerated(EnumType.STRING) // This saves "EMPLOYEE" as text in SQL, not a number (Industry Standard)
+    private Role role;
 
     @Column(nullable = false)
     private String specialization;

@@ -5,6 +5,8 @@ import com.drms.disaster_relief.dto.LoginDTO;
 import com.drms.disaster_relief.dto.NgoDTO;
 import com.drms.disaster_relief.dto.UserDTO;
 import com.drms.disaster_relief.entity.*;
+import com.drms.disaster_relief.enums.EntityType;
+import com.drms.disaster_relief.enums.Role;
 import com.drms.disaster_relief.repository.AuthRepository;
 import com.drms.disaster_relief.repository.EmployeeRepository;
 import com.drms.disaster_relief.repository.NGORepository;
@@ -49,17 +51,21 @@ public class AuthService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));  //  this line calls userdetailserviceimpl to find auth detail from db
         //  takes password, uses Bcryptpassword algo and matches it with hash password saved in db. if matches go forward otherwise not.
         Auth auth = authRepository.findByLoginIdentifier(email).orElseThrow(() -> new RuntimeException("Authentication record missing for: " + email));
-        return jwtUtill.generateToken(email, auth.getRole());
+        return jwtUtill.generateToken(email, auth.getRole().name());
     }
 
     @Transactional    //    for user
     public String userSignUp(UserDTO request) {
 
+        if (authRepository.findByLoginIdentifier(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Error: This email is already registered.");
+        }
+
         User user = createUserObject(request);
         User savedUser = userRepository.save(user);
 
         Auth auth = createAuthObject(savedUser.getEmail(), request.getPassword(),
-                "USER", "CITIZEN",savedUser.getUserId(),true);      //   creating auth object
+                Role.USER, EntityType.CITIZEN,savedUser.getUserId(),true);      //   creating auth object
 
         authRepository.save(auth);     //  save auth object in auth table
         return "User registered successfully";
@@ -84,8 +90,10 @@ public class AuthService {
         Employee employee = createEmployeeObject(request);
         Employee savedEmployee = employeeRepository.save(employee);
 
+        Role securityRole = Role.valueOf(request.getRole().toUpperCase());
+
         Auth auth = createAuthObject(savedEmployee.getEmail(), request.getPassword(),
-                savedEmployee.getRole(), "EMPLOYEE", savedEmployee.getEmployeeId(), true);
+                securityRole, EntityType.EMPLOYEE, savedEmployee.getEmployeeId(), true);
 
         authRepository.save(auth);
         return "Employee registered successfully";
@@ -100,9 +108,12 @@ public class AuthService {
         employee.setCnic(request.getCnic());
         employee.setPhoneNumber(request.getPhoneNumber());
         employee.setEmail(request.getEmail());
-        employee.setRole(request.getRole());
+        if (request.getRole() != null) {
+            employee.setRole(Role.valueOf(request.getRole().toUpperCase()));
+        }
         employee.setSpecialization(request.getSpecialization());
         employee.setAvailabilityStatus(request.getAvailabilityStatus());
+
         return employee;
     }
 
@@ -111,8 +122,7 @@ public class AuthService {
         NGO ngo = createNgoObject(request);
         NGO savedNGO = ngoRepository.save(ngo);
 
-        Auth auth = createAuthObject(savedNGO.getEmail(), request.getPassword(),
-                "NGO", "NGO", savedNGO.getNgoId(),false);
+        Auth auth = createAuthObject(savedNGO.getEmail(), request.getPassword(), Role.NGO, EntityType.NGO, savedNGO.getNgoId(),false);
 
         authRepository.save(auth);
         return "NGO Registered Successfully";
@@ -134,7 +144,7 @@ public class AuthService {
         return ngo;
     }
 
-    private Auth createAuthObject(String email, String password, String role, String entityType,  UUID entityId, boolean isActive) {
+    private Auth createAuthObject(String email, String password, Role role, EntityType entityType, UUID entityId, boolean isActive) {
 
         Auth auth = new Auth();
         auth.setLoginIdentifier(email);

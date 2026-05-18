@@ -1,5 +1,6 @@
 package com.drms.disaster_relief.entity;
 
+import com.drms.disaster_relief.enums.RequestStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -21,7 +22,8 @@ public class HelpRequestLog {
     @JoinColumn(name = "employeeId")
     private Employee addedBy;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private RequestStatus status;
 
     private String remarks;
 
