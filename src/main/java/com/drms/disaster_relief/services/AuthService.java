@@ -64,9 +64,16 @@ public class AuthService {
     public String login(Map<String, String> loginData) {
         String email = (String) loginData.get("email");
         String password = (String) loginData.get("password");
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));  //  this line calls userdetailserviceimpl to find auth detail from db
-                                                                                                    //  takes password, uses Bcryptpassword algo and matches it with hash password saved in db. if matches go forward otherwise not.
-        return jwtUtill.generateToken(email);
+
+        // 1. Authenticate the user
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+
+        // 2. Fetch the user's auth record from the database to get their role
+        Auth auth = authRepository.findByLoginIdentifier(email).get();
+        String roleName = auth.getRole().name(); // Extracts "ADMIN", "USER", etc.
+
+        // 3. Pass BOTH the email and the role to the token generator
+        return jwtUtill.generateToken(email, roleName);
     }
 
 

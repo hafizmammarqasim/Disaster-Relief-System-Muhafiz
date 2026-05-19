@@ -26,8 +26,9 @@ public class JWTUtill {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String loginIdentifier) {
+    public String generateToken(String loginIdentifier, String role) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role); // <--- We are injecting the role into the token here!
         return createToken(claims, loginIdentifier);
     }
 
