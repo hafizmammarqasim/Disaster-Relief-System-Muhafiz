@@ -11,4 +11,6 @@ import java.util.UUID;
 public interface AuthRepository extends JpaRepository<Auth, UUID> {
 
     Optional<Auth> findByLoginIdentifier(String loginIdentifier);
+
+    boolean existsByLoginIdentifier(String identifier);
 }

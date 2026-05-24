@@ -7,49 +7,34 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "employees")
 public class Employee {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue
     private UUID employeeId;
 
     @ManyToOne
     @JoinColumn(name="branchId")
     private Branch branch;
 
-    @Column(nullable = false)
     private String firstName;
 
-    @Column(nullable = false)
     private String lastName;
 
-    @Column(unique = true, nullable = false)
     private String cnic;
 
-    @Column(nullable = false)
     private String phoneNumber;
 
-    @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
     private String role;
 
-    @Column(nullable = false)
     private String specialization;
 
     private String availabilityStatus;
 
-    private boolean isActive = true;
+    private boolean isActive;
 
-    @Column(updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 
-    @Column(updatable = true)
-    private LocalDateTime updatedAt = LocalDateTime.now();
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
+    private LocalDateTime updatedAt;
 }

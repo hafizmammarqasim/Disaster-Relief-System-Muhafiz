@@ -7,18 +7,16 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "cities")
 public class City {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue
     private UUID cityId;
 
     @ManyToOne
     @JoinColumn(name = "provinceId")
     private Province province;
 
-    @Column(nullable = false, unique = true)
     private String cityName;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 }
