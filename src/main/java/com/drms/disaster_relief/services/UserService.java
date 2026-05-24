@@ -22,17 +22,18 @@ public class UserService {
     private final CityRepository cityRepository;
     private final ProvinceRepository provinceRepository;
     private final HelpRequestRepository helpRequestRepository;
-    private final HelpRequestLog helpRequestLog;
     private final HelpRequestLogRepository helpRequestLoglogRepository;
 
-    public UserService(UserRepository userRepository, CityRepository cityRepository, ProvinceRepository provinceRepository,
-                       HelpRequestRepository helpRequestRepository, HelpRequestLog helpRequestLog, HelpRequestLogRepository helpRequestLoglogRepository) {
+    public UserService(UserRepository userRepository,
+                       CityRepository cityRepository,
+                       ProvinceRepository provinceRepository,
+                       HelpRequestRepository helpRequestRepository,
+                       HelpRequestLogRepository helpRequestLogRepo) {
         this.userRepository = userRepository;
         this.cityRepository = cityRepository;
         this.provinceRepository = provinceRepository;
         this.helpRequestRepository = helpRequestRepository;
-        this.helpRequestLog = helpRequestLog;
-        this.helpRequestLoglogRepository = helpRequestLoglogRepository;
+        this.helpRequestLoglogRepository = helpRequestLogRepo;
     }
 
 

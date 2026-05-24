@@ -27,27 +27,27 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    @PostMapping("/create-Employee")
-    public ResponseEntity<?> createEmployee(@RequestBody EmployeeDTO request) {
+//    @PostMapping("/create-Employee")
+//    public ResponseEntity<?> createEmployee(@RequestBody EmployeeDTO request) {
+//
+//        System.out.println("Admin is creating an Employee....!!!!");
+//        String result = authService.createEmployee(request);
+//        return new ResponseEntity<>(result, HttpStatus.CREATED);
+//    }
 
-        System.out.println("Admin is creating an Employee....!!!!");
-        String result = authService.createEmployee(request);
-        return new ResponseEntity<>(result, HttpStatus.CREATED);
-    }
+//    @PutMapping("/activate-NGO/{id}")
+//    public ResponseEntity<?> activateNGO(@PathVariable UUID id) {
+//        return ResponseEntity.ok(authService.verifyNGO(id));
+//    }
 
-    @PutMapping("/activate-NGO/{id}")
-    public ResponseEntity<?> activateNGO(@PathVariable UUID id) {
-        return ResponseEntity.ok(authService.verifyNGO(id));
-    }
-
-    @GetMapping("/pending-NGOs")
-    public ResponseEntity<?> getPendingNGOs() {
-        List<NGO> pendingNgoList = authService.getPendingNGOs();
-        if (pendingNgoList.isEmpty()) {
-            return ResponseEntity.ok("No pending NGO at this time");
-        }
-        return ResponseEntity.ok(pendingNgoList);
-    }
+//    @GetMapping("/pending-NGOs")
+//    public ResponseEntity<?> getPendingNGOs() {
+//        List<NGO> pendingNgoList = authService.getPendingNGOs();
+//        if (pendingNgoList.isEmpty()) {
+//            return ResponseEntity.ok("No pending NGO at this time");
+//        }
+//        return ResponseEntity.ok(pendingNgoList);
+//    }
 
 
     @PostMapping("create-province")

@@ -1,5 +1,6 @@
 package com.drms.disaster_relief.configuration;
 
+import com.drms.disaster_relief.enums.RoleType;
 import com.drms.disaster_relief.security.JwtFilter;
 import com.drms.disaster_relief.security.UserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)                                        //  we using JWT (stateless). we don't need cookies. so disable this.
                 .authorizeHttpRequests(auth -> auth                                             //   permission list
                         .requestMatchers("/public/**").permitAll()                                  // url starting with /public/ is permitted to everyone (public)
-                        .requestMatchers("/admin/**").hasRole("ADMIN")                              // url starting with /admin/  is allowed to a person whose role is ADMIN
+                        .requestMatchers("/admin/**").hasRole(RoleType.ADMIN.name())                              // url starting with /admin/  is allowed to a person whose role is ADMIN
                         .requestMatchers("/api/missions/**", "/api/users/**").authenticated()      // once logged in with valid, any one can access these methods
                         .anyRequest().authenticated()                                                       // means every other url is locked. need token to unlock it
                 )

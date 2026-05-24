@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-//@Entity
+@Entity
 public class Province {
     @Id
     @GeneratedValue

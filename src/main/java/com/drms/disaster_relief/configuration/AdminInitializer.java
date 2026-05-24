@@ -1,6 +1,7 @@
 package com.drms.disaster_relief.configuration;
 
 import com.drms.disaster_relief.entity.Auth;
+import com.drms.disaster_relief.enums.RoleType;
 import com.drms.disaster_relief.repository.AuthRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +27,7 @@ public class AdminInitializer {
                 admin.setPassword(passwordEncoder.encode("admin123"));
 
                 // 4. Set the roles and labels
-                admin.setRole("ADMIN"); // Just "ADMIN" as you requested
+                admin.setRole(RoleType.ADMIN); // Just "ADMIN" as you requested
                 admin.setEntityType("SUPER_ADMIN");
                 admin.setActive(true);
 
