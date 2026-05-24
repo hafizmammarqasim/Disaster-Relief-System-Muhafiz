@@ -1,5 +1,7 @@
 package com.drms.disaster_relief.controller;
 
+import com.drms.disaster_relief.dto.LoginDTO;
+import com.drms.disaster_relief.dto.UserDTO;
 import com.drms.disaster_relief.entity.User;
 import com.drms.disaster_relief.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +19,17 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@RequestBody Map<String, Object> requestData) {
-        String result = authService.userSignup(requestData);
+    public ResponseEntity<?> signUp(UserDTO userDTO) {
+        String result = authService.userSignUp(userDTO);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
-        System.out.println("Login attempt for: " + loginData.get("email"));
+    public ResponseEntity<?> login(LoginDTO loginDTO) {
+        System.out.println("Login attempt for: " + loginDTO.getEmail());
         try {
-            String token = authService.login(loginData);
+            String token = authService.login(loginDTO);
             return new ResponseEntity<>(token, HttpStatus.OK);
         } catch (Exception e) {
             System.out.println("Login Error: " + e.getMessage());

@@ -56,8 +56,8 @@ public class UserService {
         helpRequest.setNearestLandmark(helpRequestDTO.getNearestLandmark());
         helpRequest.setLocationLat(helpRequest.getLocationLat());
         helpRequest.setLocationLng(helpRequest.getLocationLng());
-        helpRequest.setHelpType(helpRequestDTO.getHelpType());
-        helpRequest.setUrgencyLevel(helpRequestDTO.getUrgencyLevel());
+        helpRequest.setHelpType(HelpType.valueOf(helpRequestDTO.getHelpType()));
+        helpRequest.setUrgencyLevel(UrgencyLevel.valueOf(helpRequestDTO.getUrgencyLevel()));
         helpRequest.setDescription(helpRequestDTO.getDescription());
         helpRequest.setStatus(RequestStatus.PENDING);
 
@@ -87,7 +87,7 @@ public class UserService {
     private HelpRequestResponseDTO convertToResponseDTO(HelpRequest request) {
         HelpRequestResponseDTO dto = new HelpRequestResponseDTO();
         dto.setRequestId(request.getRequestId());
-        dto.setHelpType(request.getHelpType());
+        dto.setHelpType(request.getHelpType().name());
         dto.setUrgencyLevel(request.getUrgencyLevel().name());
         dto.setStatus(request.getStatus().name());
         dto.setArea(request.getArea());

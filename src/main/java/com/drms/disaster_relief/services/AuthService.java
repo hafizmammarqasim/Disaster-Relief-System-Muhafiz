@@ -46,13 +46,18 @@ public class AuthService {
         this.jwtUtill = jwtUtill;
     }
 
+    public void saveAuth(Auth auth){
+        authRepository.save(auth);
+    }
+
+
     public String login(LoginDTO request) {
         String email = request.getEmail();
         String password = request.getPassword();
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));  //  this line calls userdetailserviceimpl to find auth detail from db
         //  takes password, uses Bcryptpassword algo and matches it with hash password saved in db. if matches go forward otherwise not.
         Auth auth = authRepository.findByLoginIdentifier(email).orElseThrow(() -> new RuntimeException("Authentication record missing for: " + email));
-        return jwtUtill.generateToken(email, auth.getRole());
+        return jwtUtill.generateToken(email, auth.getRole().name());
     }
 
     @Transactional    //    for user

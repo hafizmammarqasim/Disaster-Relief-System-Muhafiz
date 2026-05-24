@@ -97,7 +97,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         auth.setLoginIdentifier(identifier); // Login ID (e.g. ammar121)
         auth.setPassword(passwordEncoder.encode("123")); // Password is 123
         auth.setRole(RoleType.EMPLOYEE);
-        auth.setEntityType("EMPLOYEE");
+        auth.setEntityType(EntityType.EMPLOYEE);
         auth.setEntityId(savedEmp.getEmployeeId());
         auth.setActive(true);
         authRepository.save(auth);

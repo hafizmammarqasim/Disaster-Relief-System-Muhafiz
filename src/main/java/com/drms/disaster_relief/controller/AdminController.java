@@ -3,9 +3,11 @@ package com.drms.disaster_relief.controller;
 import com.drms.disaster_relief.dto.CityDTO;
 import com.drms.disaster_relief.dto.EmployeeDTO;
 import com.drms.disaster_relief.dto.ProvinceDTO;
+import com.drms.disaster_relief.dto.Request.EmployeeSignUpRequest;
 import com.drms.disaster_relief.entity.NGO;
 import com.drms.disaster_relief.services.AdminService;
 import com.drms.disaster_relief.services.AuthService;
+import com.drms.disaster_relief.services.EmployeeService;
 import jdk.dynalink.linker.LinkerServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,27 +29,31 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-//    @PostMapping("/create-Employee")
-//    public ResponseEntity<?> createEmployee(@RequestBody EmployeeDTO request) {
-//
-//        System.out.println("Admin is creating an Employee....!!!!");
-//        String result = authService.createEmployee(request);
-//        return new ResponseEntity<>(result, HttpStatus.CREATED);
-//    }
+    private EmployeeService employeeService;
 
-//    @PutMapping("/activate-NGO/{id}")
-//    public ResponseEntity<?> activateNGO(@PathVariable UUID id) {
-//        return ResponseEntity.ok(authService.verifyNGO(id));
-//    }
+    @PostMapping("/create-Employee")
+    public ResponseEntity<?> createEmployee(@RequestBody EmployeeSignUpRequest request) {
 
-//    @GetMapping("/pending-NGOs")
-//    public ResponseEntity<?> getPendingNGOs() {
-//        List<NGO> pendingNgoList = authService.getPendingNGOs();
-//        if (pendingNgoList.isEmpty()) {
-//            return ResponseEntity.ok("No pending NGO at this time");
-//        }
-//        return ResponseEntity.ok(pendingNgoList);
-//    }
+        System.out.println("Admin is creating an Employee....!!!!");
+        if( employeeService.employeeSignUp(request))
+         return new ResponseEntity<>("Success in creating employee", HttpStatus.CREATED);
+        else
+            return new ResponseEntity<>("Could not create Employee", HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @PutMapping("/activate-NGO/{id}")
+    public ResponseEntity<?> activateNGO(@PathVariable UUID id) {
+        return ResponseEntity.ok(authService.verifyNGO(id));
+    }
+
+    @GetMapping("/pending-NGOs")
+    public ResponseEntity<?> getPendingNGOs() {
+        List<NGO> pendingNgoList = authService.getPendingNGOs();
+        if (pendingNgoList.isEmpty()) {
+            return ResponseEntity.ok("No pending NGO at this time");
+        }
+        return ResponseEntity.ok(pendingNgoList);
+    }
 
 
     @PostMapping("create-province")

@@ -4,6 +4,7 @@ import com.drms.disaster_relief.dto.Request.EmployeeSignUpRequest;
 import com.drms.disaster_relief.entity.Auth;
 import com.drms.disaster_relief.entity.Employee;
 import com.drms.disaster_relief.enums.EmployeeWorkingStatus;
+import com.drms.disaster_relief.enums.EntityType;
 import com.drms.disaster_relief.enums.RoleType;
 import com.drms.disaster_relief.repository.EmployeeRepository;
 import com.drms.disaster_relief.enums.EmployeeSpecialization;
@@ -40,7 +41,7 @@ public class EmployeeService {
 
             Auth auth = new Auth();
             //to get back the employee using switch case
-            auth.setEntityType("EMPLOYEE");
+            auth.setEntityType(EntityType.EMPLOYEE);
             auth.setEntityId(employee.getEmployeeId());
             auth.setLoginIdentifier(employeeDto.getLoginIdentifier());
             auth.setPassword(encoder.encode(employeeDto.getPassword()));
