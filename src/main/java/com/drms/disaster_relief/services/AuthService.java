@@ -1,11 +1,16 @@
 package com.drms.disaster_relief.services;
 
+import com.drms.disaster_relief.dto.NgoDTO;
 import com.drms.disaster_relief.entity.Auth;
+import com.drms.disaster_relief.entity.NGO;
 import com.drms.disaster_relief.entity.User;
 import com.drms.disaster_relief.enums.RoleType;
 import com.drms.disaster_relief.repository.AuthRepository;
+import com.drms.disaster_relief.repository.EmployeeRepository;
+import com.drms.disaster_relief.repository.NGORepository;
 import com.drms.disaster_relief.repository.UserRepository;
 import com.drms.disaster_relief.security.JWTUtill;
+import org.hibernate.type.EntityType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,21 +25,26 @@ import java.util.UUID;
 @Service
 public class AuthService {
 
-    @Autowired
-    private AuthRepository authRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final AuthRepository authRepository;
+    private final UserRepository userRepository;
+    private final EmployeeRepository employeeRepository;
+    private final NGORepository ngoRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JWTUtill jwtUtill;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private JWTUtill jwtUtill;
-
+    public AuthService(AuthRepository authRepository, UserRepository userRepository, EmployeeRepository employeeRepository, NGORepository ngoRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JWTUtill jwtUtill) {
+        this.authRepository = authRepository;
+        this.userRepository = userRepository;
+        this.employeeRepository = employeeRepository;
+        this.ngoRepository = ngoRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtill = jwtUtill;
+    }
     @Transactional
     public String userSignup(Map<String, Object> requestData) {
 
@@ -96,4 +106,63 @@ public class AuthService {
     public Optional<Auth> findByIdentifier(String identifier){
         return authRepository.findByLoginIdentifier(identifier);
     }
+
+    @Transactional
+    public String ngoRegistration(NgoDTO request) {
+        NGO ngo = createNgoObject(request);
+        NGO savedNGO = ngoRepository.save(ngo);
+
+        Auth auth = createAuthObject(savedNGO.getEmail(), request.getPassword(), RoleType.NGO, EntityType.NGO, savedNGO.getNgoId(),false);
+
+        authRepository.save(auth);
+        return "NGO Registered Successfully";
+    }
+
+    private NGO createNgoObject(NgoDTO request) {
+        NGO ngo = new NGO();
+
+        ngo.setOrganizationName(request.getOrganizationName());
+        ngo.setRegistrationNumber(request.getRegistrationNumber());
+        ngo.setContactPersonName(request.getContactPersonName());
+        ngo.setPhoneNumber(request.getPhoneNumber());
+        ngo.setEmail(request.getEmail());
+        ngo.setWebsite(request.getWebsite());
+        ngo.setDescription(request.getDescription());
+        ngo.setTrustScore(0);
+        ngo.setActive(false);
+
+        return ngo;
+    }
+
+    private Auth createAuthObject(String email, String password, Role role, EntityType entityType, UUID entityId, boolean isActive) {
+
+        Auth auth = new Auth();
+        auth.setLoginIdentifier(email);
+        auth.setPassword(passwordEncoder.encode(password));
+        auth.setRole(role);
+        auth.setEntityType(entityType);
+        auth.setEntityId(entityId);
+        auth.setActive(isActive);
+
+        return auth;
+    }
+
+    public List<NGO> getPendingNGOs() {
+        return ngoRepository.findAllByIsActiveFalse();
+    }
+
+    @Transactional
+    public String verifyNGO(UUID ngoId) {
+
+        NGO ngo = ngoRepository.findById(ngoId).orElseThrow(()-> new RuntimeException("Ngo with id: " + ngoId + " not found in Ngo table"));
+        ngo.setActive(true);
+        ngoRepository.save(ngo);
+
+        Auth auth = authRepository.findByLoginIdentifier(ngo.getEmail()).orElseThrow(()-> new RuntimeException("Ngo with id: " + ngoId + " not found in Auth table"));
+        auth.setActive(true);
+        authRepository.save(auth);
+
+        return "NGO " + ngo.getOrganizationName() + " has been activated successfully";
+    }
+}
 }
