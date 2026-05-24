@@ -10,6 +10,7 @@ import java.util.UUID;
 
 @Data
 @Entity
+@Table(name = "employees")
 public class Employee {
     @Id
     @GeneratedValue
@@ -19,12 +20,16 @@ public class Employee {
     @JoinColumn(name="branchId")
     private Branch branch;
 
+    @Column(nullable = false)
     private String firstName;
 
+    @Column(nullable = false)
     private String lastName;
 
+    @Column(unique = true, nullable = false)
     private String cnic;
 
+    @Column(nullable = false)
     private String phoneNumber;
 
     @Column(unique = true, nullable = false)
@@ -39,10 +44,16 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private EmployeeWorkingStatus employeeStatus;
 
-    private boolean isActive;
+    private boolean isActive = true;
 
+    @Column(updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column(updatable = true)
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

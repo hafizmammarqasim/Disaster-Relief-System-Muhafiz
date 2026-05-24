@@ -16,6 +16,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -28,7 +40,7 @@ public class SecurityConfig {
     private UserDetailServiceImpl userDetailService;
 
 
-     // this method defines the path a web request should take to be allowed
+    // this method defines the path a web request should take to be allowed
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -40,7 +52,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()                                                       // means every other url is locked. need token to unlock it
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // tells spring don't create sessions. server should
-                                                                                                            // not remeber user. at each request token verification is required
+                // not remeber user. at each request token verification is required
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);                     //  tells spring, before log in, check JWT to see if they have valid token.
 
         return http.build();
@@ -55,6 +67,19 @@ public class SecurityConfig {
     @Bean                                                      //  it is used to verify user credentials. do not need to write extra code.
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
 

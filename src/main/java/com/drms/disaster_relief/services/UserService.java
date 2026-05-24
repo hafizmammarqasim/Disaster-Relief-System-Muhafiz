@@ -7,6 +7,9 @@ import com.drms.disaster_relief.entity.City;
 import com.drms.disaster_relief.entity.HelpRequest;
 import com.drms.disaster_relief.entity.HelpRequestLog;
 import com.drms.disaster_relief.entity.User;
+import com.drms.disaster_relief.enums.HelpType;
+import com.drms.disaster_relief.enums.RequestStatus;
+import com.drms.disaster_relief.enums.UrgencyLevel;
 import com.drms.disaster_relief.repository.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,7 +25,7 @@ public class UserService {
     private final CityRepository cityRepository;
     private final ProvinceRepository provinceRepository;
     private final HelpRequestRepository helpRequestRepository;
-    private final HelpRequestLogRepository helpRequestLoglogRepository;
+    private final HelpRequestLogRepository helpRequestLogRepository;
 
     public UserService(UserRepository userRepository,
                        CityRepository cityRepository,
@@ -33,7 +36,7 @@ public class UserService {
         this.cityRepository = cityRepository;
         this.provinceRepository = provinceRepository;
         this.helpRequestRepository = helpRequestRepository;
-        this.helpRequestLoglogRepository = helpRequestLogRepo;
+        this.helpRequestLogRepository = helpRequestLogRepo;
     }
 
 
@@ -56,16 +59,16 @@ public class UserService {
         helpRequest.setHelpType(helpRequestDTO.getHelpType());
         helpRequest.setUrgencyLevel(helpRequestDTO.getUrgencyLevel());
         helpRequest.setDescription(helpRequestDTO.getDescription());
-        helpRequest.setStatus("PENDING");
+        helpRequest.setStatus(RequestStatus.PENDING);
 
         HelpRequest savedRequest = helpRequestRepository.save(helpRequest);
 
         HelpRequestLog helpRequestLog = new HelpRequestLog();
         helpRequestLog.setRequest(savedRequest);
-        helpRequestLog.setStatus("PENDING");
+        helpRequestLog.setStatus(RequestStatus.PENDING);
         helpRequestLog.setRemarks("Emergency request successfully submitted by user.");
 
-        helpRequestLoglogRepository.save(helpRequestLog);
+        helpRequestLogRepository.save(helpRequestLog);
         return "Your Help Request is submitted successfully";
     }
 
@@ -85,15 +88,15 @@ public class UserService {
         HelpRequestResponseDTO dto = new HelpRequestResponseDTO();
         dto.setRequestId(request.getRequestId());
         dto.setHelpType(request.getHelpType());
-        dto.setUrgencyLevel(request.getUrgencyLevel());
-        dto.setStatus(request.getStatus());
+        dto.setUrgencyLevel(request.getUrgencyLevel().name());
+        dto.setStatus(request.getStatus().name());
         dto.setArea(request.getArea());
         dto.setDescription(request.getDescription());
         dto.setCreatedAt(request.getCreatedAt());
 
         List<HelpRequestLogDTO> logDTOs = request.getRequestLog().stream().map(log -> {
             HelpRequestLogDTO logDto = new HelpRequestLogDTO();
-            logDto.setStatus(log.getStatus());
+            logDto.setStatus(log.getStatus().name());
             logDto.setRemarks(log.getRemarks());
             logDto.setChangedAt(log.getChangedAt());
             // Show who helped (e.g., "City Admin" or "Rescue Team 1")

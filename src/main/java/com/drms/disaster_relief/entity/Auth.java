@@ -1,5 +1,6 @@
 package com.drms.disaster_relief.entity;
 
+import com.drms.disaster_relief.enums.EntityType;
 import com.drms.disaster_relief.enums.RoleType;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -27,7 +28,7 @@ public class Auth {
     @Enumerated(EnumType.STRING)
     private RoleType role;
 
-    private String entityType;
+    private EntityType entityType;
 
     private UUID entityId;
 

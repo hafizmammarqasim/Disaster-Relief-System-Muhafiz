@@ -1,6 +1,7 @@
 package com.drms.disaster_relief.dto;
 
 import com.drms.disaster_relief.entity.Branch;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.util.UUID;
