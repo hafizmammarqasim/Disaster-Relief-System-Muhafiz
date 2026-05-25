@@ -28,6 +28,7 @@ public class Auth {
     @Enumerated(EnumType.STRING)
     private RoleType role;
 
+    @Enumerated(EnumType.STRING)
     private EntityType entityType;
 
     private UUID entityId;
