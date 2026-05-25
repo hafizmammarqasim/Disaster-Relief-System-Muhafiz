@@ -19,14 +19,14 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(UserDTO userDTO) {
+    public ResponseEntity<?> signUp(@RequestBody UserDTO userDTO) {
         String result = authService.userSignUp(userDTO);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(LoginDTO loginDTO) {
+    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
         System.out.println("Login attempt for: " + loginDTO.getEmail());
         try {
             String token = authService.login(loginDTO);

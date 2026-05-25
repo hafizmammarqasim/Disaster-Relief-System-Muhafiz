@@ -65,6 +65,7 @@ public class MissionService {
         return missionRepository.save(mission);
     }
 
+    @Transactional
     public MissionDispatchResponseDto crewAssignment(CrewAssignmentDto crewAssignmentDto){
 
        Mission mission = missionRepository.findById(crewAssignmentDto.getMissionId())
