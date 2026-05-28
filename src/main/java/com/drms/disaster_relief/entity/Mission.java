@@ -1,5 +1,6 @@
 package com.drms.disaster_relief.entity;
 
+import com.drms.disaster_relief.enums.HelpType;
 import com.drms.disaster_relief.enums.MissionStatus;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -41,7 +42,8 @@ public class Mission {
 
     private float locationLng;
 
-    private String helpType;
+    @Enumerated(EnumType.STRING)
+    private HelpType helpType;
 
     private String urgencyLevel;
 
@@ -50,13 +52,9 @@ public class Mission {
     @Enumerated(EnumType.STRING)
     private MissionStatus status;
 
-    private LocalDate expectedCompletionDate;
-
-    private LocalDate actualCompletionDate;
+    private LocalDate completionDate = null;
 
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "mission",
             fetch = FetchType.LAZY

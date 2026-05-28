@@ -5,7 +5,9 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Data
+// Right now at 29 may and 12 am  think this class is unnecessary if this logic of no inheritance
+// and separate tables of returnable and consumable logistics work...
+//@Data
 //@Entity
 public class MissionLogistics {
     @Id
@@ -18,7 +20,7 @@ public class MissionLogistics {
 
     @ManyToOne
     @JoinColumn(name = "logisticsId")
-    private Logistics logistics;
+    private LogisticsProduct logistics;
 
     @ManyToOne
     @JoinColumn(name = "employeeId")
@@ -26,11 +28,9 @@ public class MissionLogistics {
 
     private String returnStatus;
 
-    private String conditionOnReturn;
-
     private String remarks;
 
-    private LocalDateTime assignedAt;
+    private LocalDateTime assignedAt = LocalDateTime.now();
 
     private LocalDateTime returnedAt;
 }

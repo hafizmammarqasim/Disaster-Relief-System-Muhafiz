@@ -1,20 +1,41 @@
 package com.drms.disaster_relief.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.drms.disaster_relief.enums.LogisticsStatus;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+
+import java.util.UUID;
 
 @Data
-//@Entity
-//@Table(name = "returnable_logistics")
-@EqualsAndHashCode(callSuper = true)
-public class ReturnableLogistics extends Logistics {
-    // REMOVED @Id and @GeneratedValue from here
-    private String uniqueIdentifier;
-    private String condition;
-    private String model;
+@Entity
+
+public class ReturnableLogistics {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID logisticsId;
+
+    @NotNull
+    private String IdNumber;
+
+    @ManyToOne
+    @JoinColumn(name = "productId")
+    private LogisticsProduct productInfo;
+
+    private String modelName;
+
     private int year;
+
+    @ManyToOne
+    @JoinColumn(name="branchId")
+    private Branch branch;
+
+    @ManyToOne
+    @JoinColumn(name="employeeId")
+    private Employee addedBy;
+
+    @Enumerated(EnumType.STRING)
+    private LogisticsStatus status;
 }
 
 

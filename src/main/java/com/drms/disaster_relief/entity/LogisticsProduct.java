@@ -1,33 +1,25 @@
 package com.drms.disaster_relief.entity;
 
+import com.drms.disaster_relief.enums.LogisticsType;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-//@Entity
-//@Table(name = "logistics")
-@Inheritance(strategy = InheritanceType.JOINED) // This is required for inheritance
-public class Logistics {
+@Entity
+public class LogisticsProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID logisticsId;
+    private UUID productId;
 
-    @ManyToOne
-    @JoinColumn(name="branchId")
-    private Branch branch;
+    //Returnable or Consumable
+    @Enumerated(EnumType.STRING)
+    private LogisticsType type;
 
-    @ManyToOne
-    @JoinColumn(name="employeeId")
-    private Employee addedBy;
-
-    private String type;
     private String name;
-    private String category;
-    private String status;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
 
 
