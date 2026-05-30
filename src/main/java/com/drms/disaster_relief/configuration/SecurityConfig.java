@@ -28,6 +28,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -44,11 +45,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)                                        //  we using JWT (stateless). we don't need cookies. so disable this.
+                .cors(withDefaults())                                                   //  enables CORS for preflight requests
+                .csrf(AbstractHttpConfigurer::disable)                                                   //  disables CSRF
                 .authorizeHttpRequests(auth -> auth                                             //   permission list
                         .requestMatchers("/public/**").permitAll()                                  // url starting with /public/ is permitted to everyone (public)
-                        .requestMatchers("/admin/**").hasRole(RoleType.ADMIN.name())                              // url starting with /admin/  is allowed to a person whose role is ADMIN
+                        .requestMatchers("/admin/**").hasAuthority(RoleType.ADMIN.name())                              // url starting with /admin/  is allowed to a person whose role is ADMIN
                         .requestMatchers("/api/missions/**", "/api/users/**").authenticated()      // once logged in with valid, any one can access these methods
+                        .requestMatchers("/api/employee/**").hasAuthority(RoleType.ADMIN.name()) // admin-only access to employee APIs
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()                      // allows preflight OPTIONS requests
                         .anyRequest().authenticated()                                                       // means every other url is locked. need token to unlock it
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // tells spring don't create sessions. server should
@@ -98,3 +102,5 @@ public class SecurityConfig {
                 without this class spring locks every request and no one can achieve anything.
 
  */
+
+

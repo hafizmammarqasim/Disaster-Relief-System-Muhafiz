@@ -24,6 +24,10 @@ public class AuthController {
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
+    @PostMapping("/userSignup")
+    public ResponseEntity<?> userSignUp(@RequestBody UserDTO userDTO) {
+        return signUp(userDTO);
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {

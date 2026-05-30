@@ -45,7 +45,7 @@ public class EmployeeService {
             auth.setEntityId(employee.getEmployeeId());
             auth.setLoginIdentifier(employeeDto.getLoginIdentifier());
             auth.setPassword(encoder.encode(employeeDto.getPassword()));
-            auth.setRole(RoleType.valueOf(employeeDto.getRole()));
+            auth.setRole(employee.getRole());
             auth.setActive(true);
             authService.saveAuth(auth);
             return true;
@@ -62,18 +62,55 @@ public class EmployeeService {
         employee.setLastName(employeeDto.getLastName());
         employee.setBranch(employeeDto.getBranch());
         employee.setCnic(employeeDto.getCnic());
-        employee.setRole(RoleType.valueOf(employeeDto.getRole()));
+        RoleType role = parseRole(employeeDto.getRole());
+        employee.setRole(role);
         employee.setEmail(employeeDto.getEmail());
         employee.setPhoneNumber(employeeDto.getPhoneNumber());
-        employee.setSpecialization(EmployeeSpecialization.valueOf(employeeDto.getSpecialization()));
+        employee.setSpecialization(parseSpecialization(employeeDto.getSpecialization()));
 
-        //If employee is Admin, no need for availability status....
-        if(employeeDto.getRole().equalsIgnoreCase("Employee"))
-            employee.setEmployeeStatus(EmployeeWorkingStatus.Available);
-        else
-            employee.setEmployeeStatus(null);
+        EmployeeWorkingStatus status = parseWorkingStatus(employeeDto.getAvailabilityStatus());
+        if (status == null && role == RoleType.EMPLOYEE) {
+            status = EmployeeWorkingStatus.Available;
+        }
+        employee.setEmployeeStatus(status);
         employee.setActive(true);
         return employee;
+    }
+
+    private static RoleType parseRole(String role) {
+        if (role == null || role.isBlank()) {
+            throw new IllegalArgumentException("role is required");
+        }
+        for (RoleType value : RoleType.values()) {
+            if (value.name().equalsIgnoreCase(role.trim())) {
+                return value;
+            }
+        }
+        throw new IllegalArgumentException("invalid role: " + role);
+    }
+
+    private static EmployeeSpecialization parseSpecialization(String specialization) {
+        if (specialization == null || specialization.isBlank()) {
+            throw new IllegalArgumentException("specialization is required");
+        }
+        for (EmployeeSpecialization value : EmployeeSpecialization.values()) {
+            if (value.name().equalsIgnoreCase(specialization.trim())) {
+                return value;
+            }
+        }
+        throw new IllegalArgumentException("invalid specialization: " + specialization);
+    }
+
+    private static EmployeeWorkingStatus parseWorkingStatus(String availabilityStatus) {
+        if (availabilityStatus == null || availabilityStatus.isBlank()) {
+            return null;
+        }
+        for (EmployeeWorkingStatus value : EmployeeWorkingStatus.values()) {
+            if (value.name().equalsIgnoreCase(availabilityStatus.trim())) {
+                return value;
+            }
+        }
+        throw new IllegalArgumentException("invalid availabilityStatus: " + availabilityStatus);
     }
 
     public Optional<Employee> findByEmail(String email){

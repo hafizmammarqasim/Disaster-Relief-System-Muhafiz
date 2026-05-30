@@ -48,28 +48,9 @@ public class JwtFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);  //  it tells the request to keep moving
     }
 
-
-
-
-
-
-
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return "OPTIONS".equalsIgnoreCase(request.getMethod()) || path.startsWith("/public/");
+    }
 }
-
-
-
-
-/*
-       Explanation:
-                  JwtUtil class creates and validate the token.
-                  UserDetailServiceImpl finds the user details from auth table and matches with login details.
-
-                  this is the main class. this class receives every request from the browser. it looks into
-                  the header of the request and extracts the token from that header.
-                  it then asks the JwtUtill class , is this token real and not expired. if the token is real it
-                  the says to SS that this is good to go.
-
-
-
-
- */

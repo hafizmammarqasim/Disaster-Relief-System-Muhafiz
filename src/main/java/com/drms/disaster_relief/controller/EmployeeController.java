@@ -55,10 +55,14 @@ public class EmployeeController {
     @PostMapping("/create")
     public ResponseEntity<?> createEmployee(@RequestBody EmployeeSignUpRequest employeeDto){
 
-        if(employeeService.employeeSignUp(employeeDto))
-            return new ResponseEntity<>(true, HttpStatus.OK);
-        else
-            return new ResponseEntity<>(false, HttpStatus.BAD_GATEWAY);
+        try {
+            if(employeeService.employeeSignUp(employeeDto))
+                return new ResponseEntity<>(true, HttpStatus.OK);
+            else
+                return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        } catch (IllegalArgumentException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/my-missions")
