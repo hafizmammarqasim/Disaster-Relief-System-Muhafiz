@@ -34,7 +34,6 @@ public class ConsumableLogistics{
     @JoinColumn(name = "productId")
     private LogisticsProduct productInfo;
 
-    private String status;
 }
 
 

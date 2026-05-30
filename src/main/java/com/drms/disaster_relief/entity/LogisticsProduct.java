@@ -19,7 +19,7 @@ public class LogisticsProduct {
 
     private String name;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private final LocalDateTime createdAt = LocalDateTime.now();
 }
 
 
