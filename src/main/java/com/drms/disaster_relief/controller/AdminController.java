@@ -31,7 +31,7 @@ public class AdminController {
 
     private EmployeeService employeeService;
 
-    @PostMapping("/create-Employee")
+    @PostMapping("/create-employee")
     public ResponseEntity<?> createEmployee(@RequestBody EmployeeSignUpRequest request) {
 
         System.out.println("Admin is creating an Employee....!!!!");

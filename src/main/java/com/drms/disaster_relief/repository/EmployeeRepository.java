@@ -3,6 +3,7 @@ package com.drms.disaster_relief.repository;
 import com.drms.disaster_relief.entity.Employee;
 import com.drms.disaster_relief.enums.EmployeeSpecialization;
 import com.drms.disaster_relief.enums.EmployeeWorkingStatus;
+import com.drms.disaster_relief.enums.RoleType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,4 +20,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, UUID> {
 
     Page<Employee> findBySpecializationAndEmployeeStatus(EmployeeSpecialization specialization,
                                                          EmployeeWorkingStatus availabilityStatus, Pageable pageable);
+    Page<Employee> findByRole(RoleType roleType, Pageable page);
 }

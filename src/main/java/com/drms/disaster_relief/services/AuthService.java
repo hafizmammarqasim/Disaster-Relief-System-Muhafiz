@@ -99,6 +99,11 @@ public class AuthService {
         return authRepository.findByLoginIdentifier(identifier);
     }
 
+
+    public Optional<Auth> findByEntityId(UUID id){
+        return authRepository.findByEntityId(id);
+    }
+
     @Transactional
     public String ngoRegistration(NgoDTO request) {
         NGO ngo = createNgoObject(request);
@@ -109,6 +114,8 @@ public class AuthService {
         authRepository.save(auth);
         return "NGO Registered Successfully";
     }
+
+
 
     private NGO createNgoObject(NgoDTO request) {
         NGO ngo = new NGO();

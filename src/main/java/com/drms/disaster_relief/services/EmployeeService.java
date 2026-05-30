@@ -1,6 +1,10 @@
 package com.drms.disaster_relief.services;
 
 import com.drms.disaster_relief.dto.Request.EmployeeSignUpRequest;
+import com.drms.disaster_relief.dto.Request.UpdateEmployeeRequestDto;
+import com.drms.disaster_relief.dto.Request.UpdateMyProfileRequestDto;
+import com.drms.disaster_relief.dto.Response.EmployeeManagementResponseDto;
+import com.drms.disaster_relief.dto.Response.EmployeeDetailsResponseDto;
 import com.drms.disaster_relief.entity.Auth;
 import com.drms.disaster_relief.entity.Employee;
 import com.drms.disaster_relief.enums.EmployeeWorkingStatus;
@@ -10,9 +14,13 @@ import com.drms.disaster_relief.repository.EmployeeRepository;
 import com.drms.disaster_relief.enums.EmployeeSpecialization;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -111,6 +119,83 @@ public class EmployeeService {
             }
         }
         throw new IllegalArgumentException("invalid availabilityStatus: " + availabilityStatus);
+    }
+
+    public List<EmployeeManagementResponseDto> getEmployeeList() throws IllegalStateException {
+        PageRequest page = PageRequest.of(1,10);
+        Page<Employee> employeePage = employeeRepo.findByRole(RoleType.EMPLOYEE, page);
+
+        List<EmployeeManagementResponseDto> responseList = new ArrayList<>();
+        for (Employee emp : employeePage.getContent()) {
+            EmployeeManagementResponseDto dto = new EmployeeManagementResponseDto();
+            dto.setEmployeeId(emp.getEmployeeId());
+            dto.setFullName(emp.getFirstName() + " " + emp.getLastName());
+            dto.setSpecialization(emp.getSpecialization());
+            dto.setCurrentStatus(emp.getEmployeeStatus());
+            responseList.add(dto);
+        }
+        return responseList;
+    }
+
+    public EmployeeDetailsResponseDto getEmployeeDetails(UUID employeeId) {
+        Employee emp = employeeRepo.findById(employeeId)
+                .orElseThrow(() -> new IllegalStateException("Employee not found"));
+        return convertToDetailedDTO(emp);
+    }
+
+    @Transactional
+    public EmployeeDetailsResponseDto adminUpdateEmployee(UUID employeeId, UpdateEmployeeRequestDto dto) {
+        Employee emp = employeeRepo.findById(employeeId)
+                .orElseThrow(() -> new IllegalStateException("Employee not found"));
+
+        Auth auth = authService.findByEntityId(emp.getEmployeeId())
+                .orElseThrow(()-> new IllegalStateException("Auth not found"));
+
+        if (dto.getFirstName() != null) emp.setFirstName(dto.getFirstName());
+        if (dto.getLastName() != null) emp.setLastName(dto.getLastName());
+        if (dto.getEmail() != null) emp.setEmail(dto.getEmail());
+        if (dto.getPhoneNumber() != null) emp.setPhoneNumber(dto.getPhoneNumber());
+        if (dto.getRole() != null) {
+            emp.setRole(dto.getRole());
+            auth.setRole(dto.getRole());
+        }
+        if (dto.getSpecialization() != null) emp.setSpecialization(dto.getSpecialization());
+        if (dto.getEmployeeStatus() != null) emp.setEmployeeStatus(dto.getEmployeeStatus());
+
+        employeeRepo.save(emp);
+        authService.saveAuth(auth);
+
+        return convertToDetailedDTO(emp);
+    }
+
+    @Transactional
+    public EmployeeDetailsResponseDto selfUpdateProfile(UUID myEmployeeId, UpdateMyProfileRequestDto dto) {
+        Employee emp = employeeRepo.findById(myEmployeeId)
+                .orElseThrow(() -> new IllegalStateException("Profile not found"));
+
+        if (dto.getEmail() != null) emp.setEmail(dto.getEmail());
+        if (dto.getPhoneNumber() != null) emp.setPhoneNumber(dto.getPhoneNumber());
+
+        employeeRepo.save(emp);
+        return convertToDetailedDTO(emp);
+    }
+
+    // Helper Method
+    private EmployeeDetailsResponseDto convertToDetailedDTO(Employee emp) {
+        EmployeeDetailsResponseDto dto = new EmployeeDetailsResponseDto();
+        dto.setEmployeeId(emp.getEmployeeId());
+        dto.setFirstName(emp.getFirstName());
+        dto.setLastName(emp.getLastName());
+        dto.setCnic(emp.getCnic());
+        dto.setEmail(emp.getEmail());
+        dto.setPhoneNumber(emp.getPhoneNumber());
+        dto.setRole(emp.getRole());
+        dto.setSpecialization(emp.getSpecialization());
+        dto.setEmployeeStatus(emp.getEmployeeStatus());
+        if (emp.getBranch() != null) {
+            dto.setBranchName(emp.getBranch().getBranchName());
+        }
+        return dto;
     }
 
     public Optional<Employee> findByEmail(String email){

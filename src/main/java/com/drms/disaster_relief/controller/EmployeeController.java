@@ -1,6 +1,10 @@
 package com.drms.disaster_relief.controller;
 
 import com.drms.disaster_relief.dto.Request.EmployeeSignUpRequest;
+import com.drms.disaster_relief.dto.Request.UpdateEmployeeRequestDto;
+import com.drms.disaster_relief.dto.Request.UpdateMyProfileRequestDto;
+import com.drms.disaster_relief.dto.Response.EmployeeManagementResponseDto;
+import com.drms.disaster_relief.dto.Response.EmployeeDetailsResponseDto;
 import com.drms.disaster_relief.entity.Auth;
 import com.drms.disaster_relief.entity.Employee;
 import com.drms.disaster_relief.entity.Mission;
@@ -10,6 +14,7 @@ import com.drms.disaster_relief.services.MissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,10 +82,59 @@ public class EmployeeController {
         return new ResponseEntity<>(missions, HttpStatus.OK);
     }
 
+    @GetMapping("/manage-employee")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getEmployeeList() {
+        List<EmployeeManagementResponseDto> list = employeeService.getEmployeeList();
+        if(list.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/{employeeId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getEmployeeDetails(@PathVariable UUID employeeId){
+        try {
+            EmployeeDetailsResponseDto details = employeeService.getEmployeeDetails(employeeId);
+            return new ResponseEntity<>(details, HttpStatus.OK);
+        } catch (IllegalStateException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/{employeeId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> adminUpdateEmployee(
+            @PathVariable UUID employeeId,
+            @RequestBody UpdateEmployeeRequestDto dto) {
+        try {
+            EmployeeDetailsResponseDto updated = employeeService.adminUpdateEmployee(employeeId, dto);
+            return new ResponseEntity<>(updated, HttpStatus.OK);
+        } catch (IllegalStateException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<?> updateMyProfile(@RequestBody UpdateMyProfileRequestDto dto) {
+        UUID myEmployeeId = getCurrentEmployeeId();
+        if(myEmployeeId != null) {
+            try {
+                EmployeeDetailsResponseDto updated = employeeService.selfUpdateProfile(myEmployeeId, dto);
+                return new ResponseEntity<>(updated, HttpStatus.OK);
+            } catch (Exception e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            }
+        }
+        return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+    }
+
+
     //This approach isn't good right now without specifying roles for this...
     //Otherwise user can get the record of any person by just sending any person's email or identifier
     //from their own account... This is just ensuring authentication right now, not authorization
-    @GetMapping("/{email}")
+    @GetMapping("/email/{email}")
     public ResponseEntity<?> getEmployee(@PathVariable String email){
         Optional<Employee> employeeBox = employeeService.findByEmail(email);
 
