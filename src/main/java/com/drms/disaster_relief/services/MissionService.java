@@ -1,16 +1,14 @@
 package com.drms.disaster_relief.services;
 
+import com.drms.disaster_relief.dto.Request.AssignLogisticsDto;
 import com.drms.disaster_relief.dto.Request.CreateMissionDto;
 import com.drms.disaster_relief.dto.Request.CrewAssignmentDto;
 import com.drms.disaster_relief.dto.Response.AssignedCrewMemberDto;
+import com.drms.disaster_relief.dto.Response.LogisticsAssignedResponseDto;
 import com.drms.disaster_relief.dto.Response.MissionDispatchResponseDto;
-import com.drms.disaster_relief.entity.Employee;
-import com.drms.disaster_relief.entity.Mission;
-import com.drms.disaster_relief.entity.MissionCrewAssignment;
+import com.drms.disaster_relief.entity.*;
+import com.drms.disaster_relief.enums.*;
 import com.drms.disaster_relief.repository.*;
-import com.drms.disaster_relief.enums.EmployeeSpecialization;
-import com.drms.disaster_relief.enums.EmployeeWorkingStatus;
-import com.drms.disaster_relief.enums.MissionStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,17 +27,30 @@ public class MissionService {
     EmployeeRepository employeeRepository;
     CityRepository cityRepository;
     BranchRepository branchRepository;
+    ReturnableLogisticsRepo returnableLogisticsRepo;
+    ConsumableLogisticsRepo consumableLogisticsRepo;
+    ReturnableLogisticsAssignmentRepository returnableAssignmentRepo;
+    ConsumableLogisticsAssignmentRepo consumableAssignmentRepo;
+
     //constructor Injection
     public MissionService(MissionRepository missionRepository,
                           CrewAssignmentRepository crewAssignmentRepo,
                           EmployeeRepository employeeRepository,
                           CityRepository cityRepository,
-                          BranchRepository branchRepository){
+                          BranchRepository branchRepository,
+                          ReturnableLogisticsRepo returnableLogisticsRepo,
+                          ConsumableLogisticsRepo consumableLogisticsRepo,
+                          ReturnableLogisticsAssignmentRepository returnableAssignmentRepo,
+                          ConsumableLogisticsAssignmentRepo consumableAssignmentRepo){
         this.missionRepository = missionRepository;
         this.crewAssignmentRepo = crewAssignmentRepo;
         this.employeeRepository = employeeRepository;
         this.cityRepository = cityRepository;
         this.branchRepository = branchRepository;
+        this.returnableLogisticsRepo = returnableLogisticsRepo;
+        this.consumableLogisticsRepo = consumableLogisticsRepo;
+        this.returnableAssignmentRepo = returnableAssignmentRepo;
+        this.consumableAssignmentRepo = consumableAssignmentRepo;
     }
 
     public List<Mission> getMissionByEmployee(UUID employeeId){
@@ -175,6 +186,84 @@ public class MissionService {
 
         // 3. Add the crew list to the main response and return it
         response.setAssignedCrew(crewDtos);
+        return response;
+    }
+
+    @Transactional
+    public LogisticsAssignedResponseDto assignLogistics(AssignLogisticsDto dto) {
+        Mission mission = missionRepository.findById(dto.getMissionId())
+                .orElseThrow(() -> new IllegalStateException("Mission Not Found"));
+
+        int returnableCount = 0;
+        int consumableCount = 0;
+
+        // 1. ASSIGN RETURNABLES (Dynamic Selection)
+        if (dto.getReturnables() != null) {
+            for (AssignLogisticsDto.ReturnableRequest req : dto.getReturnables()) {
+                Pageable limit = PageRequest.of(0, req.getQuantityNeeded());
+
+                List<ReturnableLogistics> assetsToAssign = returnableLogisticsRepo
+                        .findByProductInfo_ProductIdAndStatus(req.getProductId(), LogisticsStatus.AVAILABLE, limit)
+                        .getContent();
+
+                if (assetsToAssign.size() < req.getQuantityNeeded()) {
+                    throw new IllegalStateException("Not enough assets available for product ID: " + req.getProductId());
+                }
+
+                for (ReturnableLogistics asset : assetsToAssign) {
+                    asset.setStatus(LogisticsStatus.IN_USE); // Update status!
+                    returnableLogisticsRepo.save(asset);
+
+                    ReturnableLogisticsAssignment assignment = new ReturnableLogisticsAssignment();
+                    assignment.setMission(mission);
+                    assignment.setLogistics(asset);
+                    assignment.setReturnStatus(LogisticsReturnStatus.IN_USE);
+                    returnableAssignmentRepo.save(assignment);
+                    returnableCount++;
+                }
+                System.out.println(returnableCount);
+            }
+        }
+
+        // 2. ASSIGN CONSUMABLES (Direct Row Update)
+        if (dto.getConsumables() != null) {
+            for (AssignLogisticsDto.ConsumableRequest req : dto.getConsumables()) {
+                ConsumableLogistics item = consumableLogisticsRepo.findById(req.getLogisticsId())
+                        .orElseThrow(() -> new IllegalStateException("Consumable not found"));
+
+                // Convert String to Int for math
+                int availableUnits = Integer.parseInt(item.getQuantityOfUnits());
+
+                if (availableUnits < req.getRequestedUnits()) {
+                    throw new IllegalStateException("Not enough units available for: " + item.getProductInfo().getName());
+                }
+
+                // Deduct and save back as String
+                int newUnits = availableUnits - req.getRequestedUnits();
+                item.setQuantityOfUnits(String.valueOf(newUnits));
+                consumableLogisticsRepo.save(item);
+
+                ConsumableLogisticsAssignment assignment = new ConsumableLogisticsAssignment();
+                assignment.setMission(mission);
+                assignment.setLogistics(item);
+                assignment.setQuantityAssigned(req.getRequestedUnits());
+                consumableAssignmentRepo.save(assignment);
+                consumableCount++;
+            }
+        }
+
+        System.out.println("Reached checkpoint");
+        // 3. FINALIZE MISSION
+        mission.setStatus(MissionStatus.IN_PROGRESS);
+        missionRepository.save(mission);
+
+        LogisticsAssignedResponseDto response = new LogisticsAssignedResponseDto();
+        response.setMissionId(mission.getMissionId());
+        response.setMissionName(mission.getMissionName());
+        response.setReturnablesAssigned(returnableCount);
+        response.setConsumablesAssigned(consumableCount);
+        response.setMessage("Logistics completely assigned. Mission is IN_PROGRESS.");
+
         return response;
     }
 }

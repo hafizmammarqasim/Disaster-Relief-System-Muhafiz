@@ -1,10 +1,12 @@
 package com.drms.disaster_relief.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Data
 @Entity
 //This is for assignment of Consumable Logistics to a particular mission
 public class ConsumableLogisticsAssignment {

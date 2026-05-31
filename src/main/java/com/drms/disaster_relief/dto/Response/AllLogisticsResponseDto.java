@@ -10,9 +10,9 @@ import java.util.List;
 @Data
 public class AllLogisticsResponseDto {
 
-    private List<ReturnableLogistics> returnableLogisticsList;
+    private List<ReturnableLogisticsDto> returnableLogisticsList;
 
-    private List<ConsumableLogistics> consumableLogisticsList;
+    private List<ConsumableLogisticsDto> consumableLogisticsList;
 
     private int returnableLogisticsSize;
     private int consumableLogisticsSize;

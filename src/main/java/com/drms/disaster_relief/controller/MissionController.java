@@ -1,7 +1,9 @@
 package com.drms.disaster_relief.controller;
 
+import com.drms.disaster_relief.dto.Request.AssignLogisticsDto;
 import com.drms.disaster_relief.dto.Request.CreateMissionDto;
 import com.drms.disaster_relief.dto.Request.CrewAssignmentDto;
+import com.drms.disaster_relief.dto.Response.LogisticsAssignedResponseDto;
 import com.drms.disaster_relief.dto.Response.MissionDispatchResponseDto;
 import com.drms.disaster_relief.entity.Auth;
 import com.drms.disaster_relief.entity.Mission;
@@ -39,7 +41,7 @@ public class MissionController {
         return new ResponseEntity<>(missions, HttpStatus.OK);
     }
 
-//    @PreAuthorize("hasRole(ADMIN)")
+   @PreAuthorize("hasRole(ADMIN)")
     @PostMapping("/create")
     public ResponseEntity<?> createMission(@RequestBody CreateMissionDto missionDto){
 
@@ -58,6 +60,17 @@ public class MissionController {
             return new ResponseEntity<>("Error in creating Mission", HttpStatus.NO_CONTENT);
     }
 
+    @PostMapping("/assign-logistics")
+    public ResponseEntity<?> assignLogisticsToMission(@RequestBody AssignLogisticsDto dto) {
+        try {
+            LogisticsAssignedResponseDto response = missionService.assignLogistics(dto);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (IllegalStateException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    //Helper method
     private UUID getCurrentEmployeeId() {
         String identifier = SecurityContextHolder.getContext().getAuthentication().getName();
 

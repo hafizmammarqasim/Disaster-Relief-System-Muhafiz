@@ -2,10 +2,12 @@ package com.drms.disaster_relief.entity;
 
 import com.drms.disaster_relief.enums.LogisticsReturnStatus;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Data
 @Entity
 //This is for assignment of Returnable Logistics to a particular mission
 public class ReturnableLogisticsAssignment {

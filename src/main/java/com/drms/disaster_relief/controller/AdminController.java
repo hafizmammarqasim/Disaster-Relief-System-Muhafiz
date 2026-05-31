@@ -1,5 +1,6 @@
 package com.drms.disaster_relief.controller;
 
+import com.drms.disaster_relief.dto.BranchDto;
 import com.drms.disaster_relief.dto.CityDTO;
 import com.drms.disaster_relief.dto.EmployeeDTO;
 import com.drms.disaster_relief.dto.ProvinceDTO;
@@ -66,8 +67,10 @@ public class AdminController {
         return ResponseEntity.ok(adminService.createCity(cityDTO));
     }
 
-
-
+    @PostMapping("/create-branch")
+    public ResponseEntity<?> createBranch(@RequestBody BranchDto branchDTO) {
+        return ResponseEntity.ok(adminService.createBranch(branchDTO));
+    }
 
 }
 
