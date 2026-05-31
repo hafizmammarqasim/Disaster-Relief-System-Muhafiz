@@ -30,9 +30,10 @@ build/
 !**/src/test/**/build/
 
 ### VS Code ###
-.vscode/
 
 # Ignore IntelliJ IDEA project files
 out/
 gen/
 .idea/
+config.bat
+node_modules

@@ -27,5 +27,5 @@ public class Branch {
 
     private String phoneNumber;
 
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
