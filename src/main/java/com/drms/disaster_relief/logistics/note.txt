@@ -1,0 +1,1 @@
+Why need catalogDto vs others. Why did we use DispatchCatalogDto then?
