@@ -1,0 +1,67 @@
+package com.drms.disaster_relief.mission.entity;
+
+import com.drms.disaster_relief.auth.entity.Employee;
+import com.drms.disaster_relief.helpRequest.enums.HelpType;
+import com.drms.disaster_relief.mission.enums.MissionStatus;
+import com.drms.disaster_relief.helpRequest.entity.HelpRequest;
+import com.drms.disaster_relief.location.entity.Branch;
+import com.drms.disaster_relief.location.entity.City;
+import jakarta.persistence.*;
+import lombok.Data;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+@Data
+@Entity
+public class Mission {
+    @Id
+    @GeneratedValue
+    private UUID missionId;
+
+    @OneToOne
+    @JoinColumn(name="requestId")
+    private HelpRequest request;
+
+    @ManyToOne
+    @JoinColumn(name = "cityId")
+    private City city;
+
+    @ManyToOne
+    @JoinColumn(name="branchId")
+    private Branch branch;
+
+    @ManyToOne
+    @JoinColumn(name = "employeeId")
+    private Employee createdBy;
+
+    private String missionName;
+
+    private String type;
+
+    private String area;
+
+    private float locationLat;
+
+    private float locationLng;
+
+    @Enumerated(EnumType.STRING)
+    private HelpType helpType;
+
+    private String urgencyLevel;
+
+    private String guidelines;
+
+    @Enumerated(EnumType.STRING)
+    private MissionStatus status;
+
+    private LocalDate completionDate = null;
+
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @OneToMany(mappedBy = "mission",
+            fetch = FetchType.LAZY
+    )
+    private List<MissionCrewAssignment> crewAssignments;
+}

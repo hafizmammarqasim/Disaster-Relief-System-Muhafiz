@@ -1,9 +1,9 @@
 package com.drms.disaster_relief.configuration;
 
-import com.drms.disaster_relief.entity.Auth;
-import com.drms.disaster_relief.enums.EntityType;
-import com.drms.disaster_relief.enums.RoleType;
-import com.drms.disaster_relief.repository.AuthRepository;
+import com.drms.disaster_relief.auth.entity.Auth;
+import com.drms.disaster_relief.auth.enums.EntityType;
+import com.drms.disaster_relief.auth.enums.RoleType;
+import com.drms.disaster_relief.auth.repo.AuthRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

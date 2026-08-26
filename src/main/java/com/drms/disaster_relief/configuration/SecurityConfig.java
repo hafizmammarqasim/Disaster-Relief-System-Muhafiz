@@ -1,8 +1,8 @@
 package com.drms.disaster_relief.configuration;
 
-import com.drms.disaster_relief.enums.RoleType;
-import com.drms.disaster_relief.security.JwtFilter;
-import com.drms.disaster_relief.security.UserDetailServiceImpl;
+import com.drms.disaster_relief.auth.enums.RoleType;
+import com.drms.disaster_relief.common.security.JwtFilter;
+import com.drms.disaster_relief.common.security.UserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,11 +21,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.http.HttpMethod;
@@ -37,6 +32,7 @@ public class SecurityConfig {
     @Autowired
     private JwtFilter jwtFilter;
 
+    //This is automatically used by the SpringContext and provided to the DAOProvider
     @Autowired
     private UserDetailServiceImpl userDetailService;
 
@@ -57,7 +53,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()                                                       // means every other url is locked. need token to unlock it
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // tells spring don't create sessions. server should
-                // not remeber user. at each request token verification is required
+                // not remember user. at each request token verification is required
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);                     //  tells spring, before log in, check JWT to see if they have valid token.
 
         return http.build();
